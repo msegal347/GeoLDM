@@ -1,8 +1,3 @@
-# Rdkit import should be first, do not move it
-try:
-    from rdkit import Chem
-except ModuleNotFoundError:
-    pass
 import utils
 import argparse
 from qm9 import dataset
@@ -22,11 +17,6 @@ from qm9.analyze import analyze_stability_for_molecules
 from qm9.utils import prepare_context, compute_mean_mad
 from qm9 import visualizer as qm9_visualizer
 import qm9.losses as losses
-
-try:
-    from qm9 import rdkit_functions
-except ModuleNotFoundError:
-    print("Not importing rdkit functions.")
 
 
 def check_mask_correct(variables, node_mask):
@@ -87,7 +77,7 @@ def analyze_and_save(
 
     molecules = {key: torch.cat(molecules[key], dim=0) for key in molecules}
     stability_dict, rdkit_metrics = analyze_stability_for_molecules(
-        molecules, dataset_info
+        molecules, dataset_info, use_rdkit=eval_args.use_rdkit
     )
 
     return stability_dict, rdkit_metrics
@@ -147,7 +137,7 @@ def main():
     parser.add_argument(
         "--model_path", type=str, default="outputs/edm_1", help="Specify model path"
     )
-    parser.add_argument("--n_samples", type=int, default=256, help="Number of samples to generate")
+    parser.add_argument("--n_samples", type=int, default=256, help="Total number of samples to generate")
     parser.add_argument(
         "--batch_size_gen", type=int, default=64, help="Specify batch size for generation"
     )
@@ -159,6 +149,12 @@ def main():
         type=eval,
         default=False,
         help="Save samples to xyz files.",
+    )
+    parser.add_argument(
+        "--use_rdkit",
+        type=eval,
+        default=False,
+        help="Perform rdkit analysis to evaluate validity, uniqueness and novelty; could be slow.",
     )
     parser.add_argument(
         "--evaluate_nll",
@@ -191,7 +187,7 @@ def main():
     print(args)
 
     # Retrieve QM9 dataloaders
-    dataloaders, charge_scale = dataset.retrieve_dataloaders(args)
+    dataloaders, _ = dataset.retrieve_dataloaders(args)
 
     dataset_info = get_dataset_info(args.dataset, args.remove_h)
 

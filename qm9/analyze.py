@@ -1,5 +1,4 @@
 try:
-    from rdkit import Chem
     from qm9.rdkit_functions import BasicMolecularMetrics
 
     use_rdkit = True
@@ -402,13 +401,11 @@ def main_check_stability(remove_h: bool, batch_size=32):
     cfg = Config()
 
     dataset_info = datasets_config.qm9_with_h
-    dataloaders, charge_scale = dataset.retrieve_dataloaders(cfg)
+    dataloaders, _ = dataset.retrieve_dataloaders(cfg)
     if use_rdkit:
         from qm9.rdkit_functions import BasicMolecularMetrics
 
         metrics = BasicMolecularMetrics(dataset_info)
-
-    atom_decoder = dataset_info["atom_decoder"]
 
     def test_validity_for(dataloader):
         count_mol_stable = 0
@@ -448,7 +445,7 @@ def main_check_stability(remove_h: bool, batch_size=32):
         test_validity_for(test_loader)
 
 
-def analyze_stability_for_molecules(molecule_list, dataset_info):
+def analyze_stability_for_molecules(molecule_list, dataset_info, use_rdkit=False):
     one_hot = molecule_list["one_hot"]
     x = molecule_list["x"]
     node_mask = molecule_list["node_mask"]
