@@ -5,7 +5,8 @@ data/*
 bash.sh
 kohler/cache/*
 *.ipynb
-.
+.vscode
+model_weights/
 *.log
 *wandb*
 *.DS_Store*

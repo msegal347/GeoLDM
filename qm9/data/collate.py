@@ -76,28 +76,30 @@ class PreprocessQM9:
         batch : dict of Pytorch tensors
             The collated data.
         """
-        batch = {prop: batch_stack([mol[prop] for mol in batch]) for prop in batch[0].keys()}
+        batch = {
+            prop: batch_stack([mol[prop] for mol in batch]) for prop in batch[0].keys()
+        }
 
-        to_keep = (batch['charges'].sum(0) > 0)
+        to_keep = batch["charges"].sum(0) > 0
 
         batch = {key: drop_zeros(prop, to_keep) for key, prop in batch.items()}
 
-        atom_mask = batch['charges'] > 0
-        batch['atom_mask'] = atom_mask
+        atom_mask = batch["charges"] > 0
+        batch["atom_mask"] = atom_mask
 
-        #Obtain edges
+        # Obtain edges
         batch_size, n_nodes = atom_mask.size()
         edge_mask = atom_mask.unsqueeze(1) * atom_mask.unsqueeze(2)
 
-        #mask diagonal
+        # mask diagonal
         diag_mask = ~torch.eye(edge_mask.size(1), dtype=torch.bool).unsqueeze(0)
         edge_mask *= diag_mask
 
-        #edge_mask = atom_mask.unsqueeze(1) * atom_mask.unsqueeze(2)
-        batch['edge_mask'] = edge_mask.view(batch_size * n_nodes * n_nodes, 1)
+        # edge_mask = atom_mask.unsqueeze(1) * atom_mask.unsqueeze(2)
+        batch["edge_mask"] = edge_mask.view(batch_size * n_nodes * n_nodes, 1)
 
         if self.load_charges:
-            batch['charges'] = batch['charges'].unsqueeze(2)
+            batch["charges"] = batch["charges"].unsqueeze(2)
         else:
-            batch['charges'] = torch.zeros(0)
+            batch["charges"] = torch.zeros(0)
         return batch
