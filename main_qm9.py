@@ -1,8 +1,3 @@
-# Rdkit import should be first, do not move it
-try:
-    from rdkit import Chem
-except ModuleNotFoundError:
-    pass
 import copy
 import utils
 import argparse
@@ -10,7 +5,7 @@ import wandb
 from configs.datasets_config import get_dataset_info
 from os.path import join
 from qm9 import dataset
-from qm9.models import get_optim, get_model, get_autoencoder, get_latent_diffusion
+from qm9.models import get_optim, get_autoencoder, get_latent_diffusion
 from equivariant_diffusion import en_diffusion
 from equivariant_diffusion.utils import assert_correctly_masked
 from equivariant_diffusion import utils as flow_utils

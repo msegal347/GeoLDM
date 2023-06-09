@@ -26,10 +26,6 @@ def save_xyz_file(
     name="molecule",
     node_mask=None,
 ):
-    try:
-        os.makedirs(path)
-    except OSError:
-        pass
 
     if node_mask is not None:
         atomsxmol = torch.sum(node_mask, dim=1)
@@ -368,7 +364,7 @@ def plot_grid():
 def visualize(path, dataset_info, max_num=25, wandb=None, spheres_3d=False):
     files = load_xyz_files(path)[0:max_num]
     for file in files:
-        positions, one_hot, charges = load_molecule_xyz(file, dataset_info)
+        positions, one_hot, _ = load_molecule_xyz(file, dataset_info)
         atom_type = torch.argmax(one_hot, dim=1).numpy()
         dists = torch.cdist(positions.unsqueeze(0), positions.unsqueeze(0)).squeeze(0)
         dists = dists[dists > 0]
@@ -396,7 +392,7 @@ def visualize_chain(path, dataset_info, wandb=None, spheres_3d=False, mode="chai
     for i in range(len(files)):
         file = files[i]
 
-        positions, one_hot, charges = load_molecule_xyz(file, dataset_info=dataset_info)
+        positions, one_hot, _ = load_molecule_xyz(file, dataset_info=dataset_info)
 
         atom_type = torch.argmax(one_hot, dim=1).numpy()
         fn = file[:-4] + ".png"

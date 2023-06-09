@@ -17,6 +17,8 @@ from qm9.analyze import analyze_stability_for_molecules
 from qm9.utils import prepare_context, compute_mean_mad
 from qm9 import visualizer as qm9_visualizer
 import qm9.losses as losses
+from pathlib import Path
+import datetime
 
 
 def check_mask_correct(variables, node_mask):
@@ -40,6 +42,11 @@ def analyze_and_save(
     assert n_samples % batch_size == 0
     molecules = {"one_hot": [], "x": [], "node_mask": []}
     start_time = time.time()
+    if save_to_xyz:
+        output_path = Path(
+            join(eval_args.model_path, "eval/analyzed_molecules/")
+        ) / Path(str(datetime.datetime.now())[:16].replace(" ", "-").replace(":", "-"))
+        output_path.mkdir(parents=True, exist_ok=True)
     for i in range(int(n_samples / batch_size)):
         nodesxsample = nodes_dist.sample(batch_size)
         one_hot, charges, x, node_mask = sample(
@@ -65,7 +72,7 @@ def analyze_and_save(
         if save_to_xyz:
             id_from = i * batch_size
             qm9_visualizer.save_xyz_file(
-                join(eval_args.model_path, "eval/analyzed_molecules/"),
+                str(output_path) + "/",
                 one_hot,
                 charges,
                 x,
@@ -137,9 +144,14 @@ def main():
     parser.add_argument(
         "--model_path", type=str, default="outputs/edm_1", help="Specify model path"
     )
-    parser.add_argument("--n_samples", type=int, default=256, help="Total number of samples to generate")
     parser.add_argument(
-        "--batch_size_gen", type=int, default=64, help="Specify batch size for generation"
+        "--n_samples", type=int, default=256, help="Total number of samples to generate"
+    )
+    parser.add_argument(
+        "--batch_size_gen",
+        type=int,
+        default=64,
+        help="Specify batch size for generation",
     )
     parser.add_argument(
         "--gpu_id", type=int, default=0, help="Specify GPU ID to use for generation"
@@ -226,7 +238,9 @@ def main():
             % (rdkit_metrics[0], rdkit_metrics[1], rdkit_metrics[2])
         )
     else:
-        print("Install rdkit toolkit to obtain Validity, Uniqueness, Novelty")
+        print(
+            "Install rdkit toolkit and set --use_rdkit False to obtain Validity, Uniqueness, Novelty"
+        )
 
     # In GEOM-Drugs the validation partition is named 'val', not 'valid'.
     if args.dataset == "geom":
@@ -262,7 +276,9 @@ def main():
         print(f"Overview: val nll {val_nll} test nll {test_nll}", stability_dict)
         with open(join(eval_args.model_path, "eval_log.txt"), "w") as f:
             print(
-                f"Overview: val nll {val_nll} test nll {test_nll}", stability_dict, file=f
+                f"Overview: val nll {val_nll} test nll {test_nll}",
+                stability_dict,
+                file=f,
             )
 
 

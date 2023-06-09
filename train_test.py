@@ -302,9 +302,9 @@ def analyze_and_save(
     batch_size = min(batch_size, n_samples)
     assert n_samples % batch_size == 0
     molecules = {"one_hot": [], "x": [], "node_mask": []}
-    for i in range(int(n_samples / batch_size)):
+    for _ in range(int(n_samples / batch_size)):
         nodesxsample = nodes_dist.sample(batch_size)
-        one_hot, charges, x, node_mask = sample(
+        one_hot, _, x, node_mask = sample(
             args,
             device,
             model_sample,
