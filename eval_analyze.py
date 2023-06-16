@@ -202,7 +202,6 @@ def main():
     dataloaders, _ = dataset.retrieve_dataloaders(args)
 
     dataset_info = get_dataset_info(args.dataset, args.remove_h)
-
     # Load model
     generative_model, nodes_dist, prop_dist = get_latent_diffusion(
         args, device, dataset_info, dataloaders["train"]

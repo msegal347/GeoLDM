@@ -3,7 +3,6 @@ import torch
 import torch.nn.functional as F
 from equivariant_diffusion.utils import (
     assert_mean_zero_with_mask,
-    remove_mean_with_mask,
     assert_correctly_masked,
 )
 from qm9.analyze import check_stability
@@ -135,7 +134,7 @@ def sample(
     context=None,
     fix_noise=False,
 ):
-    max_n_nodes = dataset_info["max_n_nodes"]  # this is the maximum node_size in QM9
+    max_n_nodes = dataset_info["max_n_nodes"]  # this is the maximum node_size in QM9 or Geom
 
     assert int(torch.max(nodesxsample)) <= max_n_nodes
     batch_size = len(nodesxsample)
