@@ -2,7 +2,6 @@ from torch.utils.data import DataLoader
 from qm9.data.args import init_argparse
 from qm9.data.collate import PreprocessQM9
 from qm9.data.utils import initialize_datasets
-import os
 
 
 def retrieve_dataloaders(cfg):
@@ -58,7 +57,7 @@ def retrieve_dataloaders(cfg):
         data_file = "./data/geom/geom_drugs_30.npy"
         dataset_info = get_dataset_info(cfg.dataset, cfg.remove_h)
 
-        # Retrieve QM9 dataloaders
+        # Retrieve geom dataloaders
         split_data = build_geom_dataset.load_split_data(
             data_file,
             val_proportion=0.1,

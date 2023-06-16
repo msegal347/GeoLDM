@@ -1,14 +1,7 @@
-# Rdkit import should be first, do not move it
-try:
-    from rdkit import Chem
-except ModuleNotFoundError:
-    pass
-
 import utils
 import argparse
-from configs.datasets_config import qm9_with_h, qm9_without_h
 from qm9 import dataset
-from qm9.models import get_model, get_autoencoder, get_latent_diffusion
+from qm9.models import get_latent_diffusion
 
 from equivariant_diffusion.utils import assert_correctly_masked
 import torch

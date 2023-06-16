@@ -26,7 +26,6 @@ def save_xyz_file(
     name="molecule",
     node_mask=None,
 ):
-
     if node_mask is not None:
         atomsxmol = torch.sum(node_mask, dim=1)
     else:

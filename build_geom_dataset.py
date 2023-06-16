@@ -93,22 +93,28 @@ def load_split_data(
 
         assert len(data_list) > 0, "No molecules left after filter."
 
-    # CAREFUL! Only for first time run:
-    # perm = np.random.permutation(len(data_list)).astype('int32')
-    # print('Warning, currently taking a random permutation for '
-    #       'train/val/test partitions, this needs to be fixed for'
-    #       'reproducibility.')
-    # assert not os.path.exists(os.path.join(base_path, 'geom_permutation.npy'))
-    # np.save(os.path.join(base_path, 'geom_permutation.npy'), perm)
-    # del perm
+    try:
+        perm = np.load(os.path.join(base_path, "geom_permutation.npy"))
+    except:
+        print("No permutation file found, creating one.")
+        print(
+            "Warning, currently taking a random permutation for "
+            "train/val/test partitions, this needs to be fixed for"
+            "reproducibility."
+        )
+        perm = np.random.permutation(len(data_list)).astype("int32")
+        np.save(os.path.join(base_path, "geom_permutation.npy"), perm)
+        del perm
 
-    perm = np.load(os.path.join(base_path, "geom_permutation.npy"))
     data_list = [data_list[i] for i in perm]
 
     num_mol = len(data_list)
     val_index = int(num_mol * val_proportion)
     test_index = val_index + int(num_mol * test_proportion)
-    val_data, test_data, train_data = np.split(data_list, [val_index, test_index])
+    val_data = data_list[:val_index]
+    test_data = data_list[val_index:test_index]
+    train_data = data_list[test_index:]
+    
     return train_data, val_data, test_data
 
 
@@ -258,7 +264,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--remove_h", action="store_true", help="Remove hydrogens from the dataset."
     )
-    parser.add_argument("--data_dir", type=str, default="~/diffusion/data/geom/")
+    parser.add_argument("--data_dir", type=str, default="data/geom")
     parser.add_argument("--data_file", type=str, default="drugs_crude.msgpack")
     args = parser.parse_args()
     extract_conformers(args)
