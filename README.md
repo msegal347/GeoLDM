@@ -12,6 +12,18 @@ Learning, 2023*.
 
 ## Environment
 
+### To create the docker image, run:
+
+``` docker build -t geoldm_image .```
+
+### To run the docker image, run:
+
+```docker run -it geoldm_image /bin/bash```
+
+### 
+
+```python python eval_analyze.py --model_path outputs/qm9_latent2/ --gpu_id 1 --n_samples 128 --batch_size_gen 64 --save_to_xyz True --use_rdkit False ```
+
 Install the required packages from `requirements.txt`. A simplified version of the requirements can be found [here](https://github.com/ehoogeboom/e3_diffusion_for_molecules/blob/main/requirements.txt).
 
 **Note**: If you want to set-up a rdkit environment, it may be easiest to install conda and run:
